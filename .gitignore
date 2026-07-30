@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+
+# Secretos — el token de Coolify NUNCA se commitea
+.env
+.env.local
+.env*.local
+
+.vercel
+*.tsbuildinfo
+next-env.d.ts

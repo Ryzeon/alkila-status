@@ -1,0 +1,210 @@
+@import 'tailwindcss';
+
+/**
+ * Paleta tomada literalmente de alkila-movil-react/src/core/theme/tokens.ts
+ * (que a su vez viene del mockup "Panel Alkila.dc.html").
+ * No inventar colores fuera de esta paleta.
+ */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #17120f;
+  --surface: #201913;
+  --surface-2: #2a211a;
+  --surface-3: #342a21;
+  --border: #3a2e25;
+  --border-2: #4a3b30;
+  --text: #f4ede6;
+  --muted: #b7a89b;
+  --faint: #8a7a6d;
+  --brand: #e0602a;
+  --brand-ink: #ffffff;
+  --brand-soft: rgba(224, 96, 42, 0.16);
+  --amber: #e8a33d;
+
+  /* status.* de los tokens, remapeado a la semántica de un status page */
+  --ok: #46a877; /* status.available */
+  --degraded: #e0a13a; /* status.nearExpiry */
+  --down: #d85a4c; /* status.expired */
+  --idle: #9b8b7d; /* status.blocked */
+
+  /* Pista de las barras aún no medidas: presente pero sin llamar la atención. */
+  --track: #2e251d;
+
+  --glass: rgba(32, 25, 19, 0.72);
+  --grain-opacity: 0.055;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f4efe9;
+  --surface: #ffffff;
+  --surface-2: #f7f1eb;
+  --surface-3: #efe6dd;
+  --border: #e7dbd0;
+  --border-2: #dccbbb;
+  --text: #241a13;
+  --muted: #74655a;
+  --faint: #9a8a7c;
+  --brand: #c1440e;
+  --brand-ink: #ffffff;
+  --brand-soft: rgba(193, 68, 14, 0.1);
+  --amber: #b9791a;
+
+  --ok: #2f8a5c;
+  --degraded: #b9791a;
+  --down: #c0392b;
+  --idle: #7d6f62;
+
+  --track: #e4d9cd;
+
+  --glass: rgba(255, 255, 255, 0.72);
+  --grain-opacity: 0.03;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-2);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-amber: var(--amber);
+  --color-ok: var(--ok);
+  --color-degraded: var(--degraded);
+  --color-down: var(--down);
+  --color-idle: var(--idle);
+  --color-track: var(--track);
+  --color-glass: var(--glass);
+
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+
+  /* radius de tokens.ts: 16 / 20 / 26 / 32 */
+  --radius-sm: 16px;
+  --radius-md: 20px;
+  --radius-lg: 26px;
+  --radius-xl: 32px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* La nav flota fija: los destinos de ancla se detienen debajo de ella, no bajo. */
+[id] {
+  scroll-margin-top: 7rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Fondo ambiental: dos lavados radiales + grano.
+ * Fijo al viewport para que respire bajo todo el scroll sin repintarse.
+ * ------------------------------------------------------------------------ */
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.ambient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60rem 40rem at 12% -8%, var(--brand-soft), transparent 68%),
+    radial-gradient(48rem 36rem at 96% 4%, color-mix(in srgb, var(--amber) 10%, transparent), transparent 68%),
+    radial-gradient(54rem 50rem at 52% 112%, color-mix(in srgb, var(--brand) 7%, transparent), transparent 70%);
+}
+
+/* Grano SVG inline: textura sin pedir un asset externo. */
+.ambient::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------------------------
+ * Movimiento
+ * ------------------------------------------------------------------------ */
+
+@keyframes status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.82);
+  }
+}
+
+.status-pulse {
+  animation: status-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes marquee-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee-drift 42s linear infinite;
+}
+
+.marquee-mask {
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+}
+
+/* Halo que respira detrás del veredicto del hero. */
+@keyframes halo-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
+}
+
+.halo-breathe {
+  animation: halo-breathe 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-pulse,
+  .marquee-track,
+  .halo-breathe {
+    animation: none;
+  }
+}
