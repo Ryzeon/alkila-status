@@ -4,17 +4,19 @@ import type { Health, ServiceStatus } from '@/lib/types';
 import { healthColor } from './StatusDot';
 
 const HEADLINE: Record<Health, { lead: string; rest: string }> = {
-  operational: { lead: 'Todos los sistemas', rest: 'operativos' },
-  degraded: { lead: 'Rendimiento', rest: 'degradado' },
+  operational: { lead: 'Todos los servicios', rest: 'operativos' },
+  degraded: { lead: 'Servicio', rest: 'degradado' },
   down: { lead: 'Interrupción del', rest: 'servicio' },
   unknown: { lead: 'Estado', rest: 'indeterminado' },
 };
 
-/**
- * Hero Editorial Split: veredicto a la izquierda con enorme espacio negativo,
- * lectura en vivo a la derecha. El veredicto ES el hero de un status page —
- * es lo único que alguien viene a leer cuando algo huele mal.
- */
+const SUBLINE: Record<Health, string> = {
+  operational: 'No hay incidencias reportadas.',
+  degraded: 'Algunos servicios responden más lento de lo normal.',
+  down: 'Estamos trabajando para restablecerlo.',
+  unknown: 'No se pudo verificar el estado de todos los servicios.',
+};
+
 export function Hero({
   overall,
   services,
@@ -29,14 +31,7 @@ export function Hero({
   const color = healthColor(overall);
   const { lead, rest } = HEADLINE[overall];
 
-  const latencies = services
-    .map((service) => service.latencyMs)
-    .filter((value): value is number => value !== undefined);
-
-  const median = latencies.length
-    ? [...latencies].sort((a, b) => a - b)[Math.floor(latencies.length / 2)]
-    : null;
-
+  const operational = services.filter((service) => service.health === 'operational').length;
   const unmeasured = services.length - measuredCount;
 
   return (
@@ -54,7 +49,7 @@ export function Hero({
 
         <h1
           // max-w en ch + tope de 4.6rem: garantiza que el titular más largo
-          // ("Todos los sistemas operativos", 29 caracteres) quiebre en 2 líneas.
+          // ("Todos los servicios operativos", 30 caracteres) quiebre en 2 líneas.
           className="relative max-w-[19ch] leading-[0.95] font-bold tracking-[-0.035em] text-ink"
           style={{ fontSize: 'clamp(2.75rem, 5vw, 4.6rem)' }}
         >
@@ -70,28 +65,20 @@ export function Hero({
         </h1>
 
         <p className="mt-8 max-w-md text-[17px] leading-relaxed text-muted">
-          Medido desde fuera de la infraestructura, cada 30 segundos. Si el servidor cae
-          entero, esta página sigue midiendo y lo dice.
+          {SUBLINE[overall]}
         </p>
 
-        <div className="mt-10 flex flex-wrap items-center gap-3">
+        <div className="mt-10">
           <a
-            href="#componentes"
-            className="rounded-full px-6 py-3 text-[15px] font-semibold transition-opacity hover:opacity-90"
+            href="#servicios"
+            className="inline-block rounded-full px-6 py-3 text-[15px] font-semibold transition-opacity hover:opacity-90"
             style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
           >
-            Ver los {services.length} componentes
-          </a>
-          <a
-            href="#latencia"
-            className="rounded-full border border-line-strong px-6 py-3 text-[15px] font-semibold text-ink transition-colors hover:border-brand"
-          >
-            Latencia en detalle
+            Ver el detalle
           </a>
         </div>
       </div>
 
-      {/* Lectura en vivo — deliberadamente fuera del bloque de titular. */}
       <div className="relative">
         <div
           className="rounded-xl border border-line p-7 backdrop-blur-xl sm:p-8"
@@ -107,34 +94,18 @@ export function Hero({
           </div>
 
           <div className="mt-7 flex items-baseline gap-2">
-            <span
-              className="text-6xl font-bold tracking-tighter tabular-nums"
-              style={{ color }}
-            >
-              {measuredCount}
+            <span className="text-6xl font-bold tracking-tighter tabular-nums" style={{ color }}>
+              {operational}
             </span>
             <span className="text-xl font-semibold text-faint">/ {services.length}</span>
           </div>
-          <p className="mt-1.5 text-[13px] text-muted">componentes midiéndose ahora</p>
+          <p className="mt-1.5 text-[13px] text-muted">servicios operativos</p>
 
-          {/* Sin esto, el titular "Todos los sistemas operativos" sobreafirma
-              cuando hay componentes que nadie está midiendo. */}
+          {/* Sin esto, el titular sobreafirma cuando hay servicios sin verificar. */}
           {unmeasured > 0 && (
             <p className="mt-2.5 text-[13px] font-medium" style={{ color: 'var(--degraded)' }}>
-              {unmeasured} sin medir — su estado se desconoce
+              {unmeasured} sin verificar
             </p>
-          )}
-
-          {median !== null && (
-            <div className="mt-7 border-t border-line pt-6">
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-3xl font-bold tracking-tight text-ink tabular-nums">
-                  {median === 0 ? '<1' : median}
-                </span>
-                <span className="text-base font-medium text-faint">ms</span>
-              </div>
-              <p className="mt-1 text-[13px] text-muted">latencia mediana</p>
-            </div>
           )}
         </div>
       </div>

@@ -9,15 +9,15 @@ function healthFromDependency(report: DependencyReport | undefined): {
   detail: string;
 } {
   if (!report?.status) {
-    return { health: 'unknown', detail: 'el agente no reporta esta dependencia' };
+    return { health: 'unknown', detail: 'Sin verificar' };
   }
 
   const status = report.status.toUpperCase();
 
-  if (status === 'UP') return { health: 'operational', detail: 'ping OK vía agente' };
-  if (status === 'DEGRADED') return { health: 'degraded', detail: 'responde lento vía agente' };
+  if (status === 'UP') return { health: 'operational', detail: 'Disponible' };
+  if (status === 'DEGRADED') return { health: 'degraded', detail: 'Respuesta lenta' };
 
-  return { health: 'down', detail: `el agente reporta "${report.status}"` };
+  return { health: 'down', detail: 'No responde' };
 }
 
 /**
@@ -68,12 +68,12 @@ export async function collectStatus(): Promise<StatusReport> {
       return {
         ...base,
         health: 'unknown' as const,
-        detail: 'sin endpoint de dependencias configurado',
+        detail: 'Sin verificar',
       };
     }
 
     if (!dependencies) {
-      return { ...base, health: 'unknown' as const, detail: 'el agente no respondió' };
+      return { ...base, health: 'unknown' as const, detail: 'No se pudo verificar' };
     }
 
     const report = dependencies[service.check.key];

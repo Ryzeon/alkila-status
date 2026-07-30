@@ -29,16 +29,10 @@ export function GlassNav({
 
         <div className="flex items-center gap-1.5">
           <a
-            href="#componentes"
+            href="#servicios"
             className="hidden rounded-full px-3.5 py-1.5 text-[13px] text-muted transition-colors hover:text-ink sm:block"
           >
-            Componentes
-          </a>
-          <a
-            href="#latencia"
-            className="hidden rounded-full px-3.5 py-1.5 text-[13px] text-muted transition-colors hover:text-ink sm:block"
-          >
-            Latencia
+            Servicios
           </a>
 
           <button
@@ -48,7 +42,7 @@ export function GlassNav({
             className="rounded-full px-4 py-1.5 text-[13px] font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
             style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
           >
-            {refreshing ? 'Midiendo' : 'Medir ahora'}
+            {refreshing ? 'Actualizando' : 'Actualizar'}
           </button>
 
           <ThemeToggle />

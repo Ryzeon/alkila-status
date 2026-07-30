@@ -6,8 +6,6 @@ import type { HistoryPoint, StatusReport } from '@/lib/types';
 import { BentoGrid } from './BentoGrid';
 import { GlassNav } from './GlassNav';
 import { Hero } from './Hero';
-import { LatencySection } from './LatencySection';
-import { MethodAccordion } from './MethodAccordion';
 import { SiteFooter } from './SiteFooter';
 import { StatusMarquee } from './StatusMarquee';
 
@@ -59,10 +57,10 @@ export function StatusDashboard({ initial }: { initial: StatusReport }) {
       setReport(next);
       setHistory((previous) => appendHistory(previous, next));
       setError(null);
-    } catch (cause) {
+    } catch {
       // Si el propio status page falla, se dice — no se muestra data vieja
       // como si fuera fresca.
-      setError(cause instanceof Error ? cause.message : 'error de red');
+      setError('No se pudo actualizar');
     } finally {
       setRefreshing(false);
     }
@@ -91,12 +89,10 @@ export function StatusDashboard({ initial }: { initial: StatusReport }) {
 
   const updatedLabel =
     elapsed === null
-      ? 'Sincronizando'
-      : elapsed < 5
-        ? 'Medido hace unos segundos'
-        : elapsed < 60
-          ? `Medido hace ${elapsed} s`
-          : `Medido hace ${Math.floor(elapsed / 60)} min`;
+      ? 'Actualizando'
+      : elapsed < 60
+        ? 'Actualizado hace un momento'
+        : `Actualizado hace ${Math.floor(elapsed / 60)} min`;
 
   const measuredCount = report.services.filter((service) => service.health !== 'unknown').length;
 
@@ -125,23 +121,14 @@ export function StatusDashboard({ initial }: { initial: StatusReport }) {
               background: 'color-mix(in srgb, var(--down) 7%, var(--surface))',
             }}
           >
-            No se pudo remedir ({error}). Se muestra la última lectura conocida.
+            {error}. Se muestra la última lectura conocida.
           </p>
         </div>
       )}
 
       <BentoGrid services={report.services} history={history} />
 
-      <LatencySection services={report.services} />
-
-      <MethodAccordion />
-
-      <SiteFooter
-        report={report}
-        refreshSeconds={REFRESH_SECONDS}
-        onRefresh={refresh}
-        refreshing={refreshing}
-      />
+      <SiteFooter refreshSeconds={REFRESH_SECONDS} updatedLabel={updatedLabel} />
     </main>
   );
 }

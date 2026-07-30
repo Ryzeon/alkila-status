@@ -44,7 +44,7 @@ export const SERVICES: ServiceDefinition[] = [
     id: 'mongodb',
     name: 'MongoDB',
     kind: 'database',
-    description: 'Replica set rs0 · base de datos principal',
+    description: 'Base de datos',
     check: { kind: 'dependency', key: 'mongodb' },
   },
   {
@@ -58,7 +58,7 @@ export const SERVICES: ServiceDefinition[] = [
     id: 'api',
     name: 'API',
     kind: 'backend',
-    description: 'Backend Spring Boot',
+    description: 'Servicios de la plataforma',
     check: {
       kind: 'http',
       url: 'https://api.alkila.com.pe/actuator/health',
@@ -70,21 +70,21 @@ export const SERVICES: ServiceDefinition[] = [
     id: 'app',
     name: 'App',
     kind: 'frontend',
-    description: 'SaaS de gestión hotelera',
+    description: 'Aplicación de gestión',
     check: { kind: 'http', url: 'https://app.alkila.com.pe' },
   },
   {
     id: 'web',
     name: 'Web',
     kind: 'frontend',
-    description: 'Sitio público',
+    description: 'Sitio web',
     check: { kind: 'http', url: 'https://alkila.com.pe' },
   },
   {
     id: 'devdocs',
     name: 'Dev Docs',
     kind: 'frontend',
-    description: 'Documentación para desarrolladores',
+    description: 'Documentación',
     check: { kind: 'http', url: 'https://developers.alkila.com.pe' },
   },
 ];

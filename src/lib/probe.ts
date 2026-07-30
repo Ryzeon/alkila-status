@@ -40,11 +40,16 @@ export async function probeHttp({ url, expectJsonStatus }: HttpProbeOptions): Pr
     const latencyMs = Date.now() - startedAt;
 
     if (response.status >= 500) {
-      return { label: 'HTTP', health: 'down', detail: `HTTP ${response.status}`, latencyMs };
+      return { label: 'HTTP', health: 'down', detail: `Error del servidor (${response.status})`, latencyMs };
     }
 
     if (response.status >= 400) {
-      return { label: 'HTTP', health: 'degraded', detail: `HTTP ${response.status}`, latencyMs };
+      return {
+        label: 'HTTP',
+        health: 'degraded',
+        detail: `Respuesta inesperada (${response.status})`,
+        latencyMs,
+      };
     }
 
     // El actuator de Spring responde 200 con {"status":"UP"}. Si algún health
@@ -59,7 +64,7 @@ export async function probeHttp({ url, expectJsonStatus }: HttpProbeOptions): Pr
         return {
           label: 'HTTP',
           health: 'degraded',
-          detail: `${response.status}, respuesta no es JSON`,
+          detail: 'Respuesta con formato inesperado',
           latencyMs,
         };
       }
@@ -68,7 +73,7 @@ export async function probeHttp({ url, expectJsonStatus }: HttpProbeOptions): Pr
         return {
           label: 'HTTP',
           health: 'down',
-          detail: `actuator reporta "${reported ?? 'sin status'}"`,
+          detail: 'El servicio reporta un problema interno',
           latencyMs,
         };
       }
@@ -76,7 +81,7 @@ export async function probeHttp({ url, expectJsonStatus }: HttpProbeOptions): Pr
       return {
         label: 'HTTP',
         health: latencyMs > SLOW_MS ? 'degraded' : 'operational',
-        detail: `actuator ${reported}`,
+        detail: latencyMs > SLOW_MS ? 'Respuesta lenta' : 'Disponible',
         latencyMs,
       };
     }
@@ -84,7 +89,7 @@ export async function probeHttp({ url, expectJsonStatus }: HttpProbeOptions): Pr
     return {
       label: 'HTTP',
       health: latencyMs > SLOW_MS ? 'degraded' : 'operational',
-      detail: `HTTP ${response.status}`,
+      detail: latencyMs > SLOW_MS ? 'Respuesta lenta' : 'Disponible',
       latencyMs,
     };
   } catch (error) {
@@ -94,11 +99,7 @@ export async function probeHttp({ url, expectJsonStatus }: HttpProbeOptions): Pr
     return {
       label: 'HTTP',
       health: 'down',
-      detail: isTimeout
-        ? `sin respuesta en ${Math.round(TIMEOUT_MS / 1000)} s`
-        : error instanceof Error
-          ? error.message
-          : 'error de red',
+      detail: isTimeout ? 'Sin respuesta' : 'No se pudo conectar',
       latencyMs,
     };
   }
