@@ -1,5 +1,6 @@
 'use client';
 
+import { AlkilaMark } from './AlkilaMark';
 import { ThemeToggle } from './ThemeToggle';
 
 /** Píldora flotante de vidrio, anclada al tope del viewport. */
@@ -18,11 +19,11 @@ export function GlassNav({
       >
         <a href="#top" className="flex items-center gap-2.5">
           <span
-            className="grid h-7 w-7 place-items-center rounded-full text-[13px] font-bold"
+            className="grid h-7 w-7 place-items-center rounded-full"
             style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
             aria-hidden="true"
           >
-            A
+            <AlkilaMark className="h-[15px] w-[15px]" />
           </span>
           <span className="text-[15px] font-semibold tracking-tight text-ink">Alkila</span>
         </a>
