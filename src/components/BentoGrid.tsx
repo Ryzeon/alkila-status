@@ -1,6 +1,6 @@
 'use client';
 
-import type { HistoryPoint, ServiceStatus } from '@/lib/types';
+import { formatLatency, type HistoryPoint, type ServiceStatus } from '@/lib/types';
 import { healthColor, healthLabel } from './StatusDot';
 import { UptimeStrip } from './UptimeStrip';
 
@@ -70,7 +70,7 @@ function Card({
         {feature && service.latencyMs !== undefined && (
           <div className="mb-7 flex items-baseline gap-1.5">
             <span className="text-5xl font-bold tracking-tighter text-ink tabular-nums">
-              {service.latencyMs}
+              {service.latencyMs === 0 ? '<1' : service.latencyMs}
             </span>
             <span className="text-lg font-medium text-faint">ms</span>
           </div>
@@ -84,7 +84,9 @@ function Card({
           </span>
 
           {!feature && service.latencyMs !== undefined && (
-            <span className="text-[13px] text-faint tabular-nums">{service.latencyMs} ms</span>
+            <span className="text-[13px] text-faint tabular-nums">
+              {formatLatency(service.latencyMs)}
+            </span>
           )}
         </div>
 

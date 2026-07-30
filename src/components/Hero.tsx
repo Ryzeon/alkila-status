@@ -129,7 +129,7 @@ export function Hero({
             <div className="mt-7 border-t border-line pt-6">
               <div className="flex items-baseline gap-1.5">
                 <span className="text-3xl font-bold tracking-tight text-ink tabular-nums">
-                  {median}
+                  {median === 0 ? '<1' : median}
                 </span>
                 <span className="text-base font-medium text-faint">ms</span>
               </div>

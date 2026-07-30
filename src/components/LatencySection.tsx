@@ -156,7 +156,7 @@ export function LatencySection({ services }: { services: ServiceStatus[] }) {
                     {service.name}
                   </span>
                   <span className="text-xl font-bold tracking-tight tabular-nums" style={{ color }}>
-                    {service.latencyMs}
+                    {service.latencyMs === 0 ? '<1' : service.latencyMs}
                     <span className="ml-1 text-sm font-medium text-faint">ms</span>
                   </span>
                 </div>

@@ -53,3 +53,11 @@ export interface HistoryPoint {
   at: number;
   health: Health;
 }
+
+/**
+ * Un ping sub-milisegundo se trunca a 0 y en pantalla parece dato faltante
+ * cuando en realidad es la mejor lectura posible.
+ */
+export function formatLatency(ms: number): string {
+  return ms === 0 ? '<1 ms' : `${ms} ms`;
+}
